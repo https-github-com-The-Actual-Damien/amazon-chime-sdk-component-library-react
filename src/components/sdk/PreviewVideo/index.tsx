@@ -19,7 +19,12 @@ const StyledPreview = styled(VideoTile)`
   }
 `;
 
-export const PreviewVideo: React.FC<BaseSdkProps> = (props) => {
+interface Props extends BaseSdkProps {
+  /** setting modal is true then not to unsubscribe from preview */
+  isSetting?: boolean;
+}
+
+export const PreviewVideo: React.FC<Props> = (props) => {
   const audioVideo = useAudioVideo();
   const videoEl = useRef<HTMLVideoElement>(null);
   const { selectedDevice } = useVideoInputs();
@@ -47,7 +52,7 @@ export const PreviewVideo: React.FC<BaseSdkProps> = (props) => {
     return () => {
       mounted = false;
 
-      if (videoEl.current) {
+      if (videoEl.current && !props.isSetting) {
         audioVideo.stopVideoPreviewForVideoInput(videoEl.current);
       }
     };

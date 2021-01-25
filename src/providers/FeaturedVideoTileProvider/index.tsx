@@ -26,7 +26,7 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
   const { attendeeIdToTileId } = useRemoteVideoTileState();
   const activeTileRef = useRef<number | null>(null);
   const [activeTile, setActiveTile] = useState<number | null>(null);
-  const timeout = useRef<number | null>(null);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingAttendee = useRef<string | null>(null);
 
   useEffect(() => {
