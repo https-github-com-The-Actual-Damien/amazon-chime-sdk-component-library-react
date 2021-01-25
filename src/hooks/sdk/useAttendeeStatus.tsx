@@ -12,6 +12,7 @@ interface RosterAttendeeStatus {
   videoEnabled: boolean;
   sharingContent: boolean;
   signalStrength: number;
+  videoTileId: number | null;
 }
 
 export function useAttendeeStatus(attendeeId: string): RosterAttendeeStatus {
@@ -131,6 +132,7 @@ export function useAttendeeStatus(attendeeId: string): RosterAttendeeStatus {
     ...audioState,
     videoEnabled,
     sharingContent,
+    videoTileId,
   };
 }
 

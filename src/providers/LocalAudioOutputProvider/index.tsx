@@ -57,10 +57,27 @@ const LocalAudioOutputProvider: React.FC = ({ children }) => {
     }
   }, [audioRef, audioVideo, isAudioOn]);
 
-  const value = useMemo(() => ({ isAudioOn, toggleAudio }), [
-    isAudioOn,
-    toggleAudio,
-  ]);
+  const setVolume = useCallback(
+    (volume: number): void => {
+      if (!audioRef.current) {
+        return;
+      }
+      audioRef.current.volume = volume;
+    },
+    [audioRef]
+  );
+
+  const getVolume = useCallback((): number => {
+    if (!audioRef.current) {
+      return 0;
+    }
+    return audioRef.current.volume;
+  }, [audioRef]);
+
+  const value = useMemo(
+    () => ({ isAudioOn, toggleAudio, setVolume, getVolume }),
+    [isAudioOn, toggleAudio, setVolume, getVolume]
+  );
 
   return (
     <Context.Provider value={value}>
