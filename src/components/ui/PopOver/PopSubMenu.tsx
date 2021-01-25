@@ -118,24 +118,29 @@ export const PopSubMenu: FC<PopOverProps> = ({
 
   // console.log('menuRef', menuRef, 'subMenuRef', subMenuRef);
   return (
-    <span ref={menuRef} onKeyDown={handleKeyUp} data-testid="popover">
+    <span
+      ref={menuRef}
+      onKeyDown={handleKeyUp}
+      data-testid="popover"
+      onMouseLeave={() => setIsOpen(false)}
+    >
       <Manager>
         <Reference>
           {({ ref }) => {
             let props = {
               ref,
               className: classnames(className, 'ch-popover-toggle'),
-              onClick: () => setIsOpen(!isOpen),
+              onMouseOver: () => setIsOpen(true),
               'data-menu': isSubMenu ? 'submenu' : null,
               'aria-label': a11yLabel,
               'aria-haspopup': true,
               'aria-expanded': isOpen,
               'data-testid': 'popover-toggle',
             };
-            const mouseFunction = {
-              onMouseOver: () => setIsOpen(false),
-            };
-            if (isSubMenu) props = { ...props, ...mouseFunction };
+            // const mouseFunction = {
+            //   onMouseLeave: () => setIsOpen(false),
+            // };
+            // if (isSubMenu) props = { ...props, ...mouseFunction };
 
             if (renderButton) {
               return (
