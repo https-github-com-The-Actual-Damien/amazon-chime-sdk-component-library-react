@@ -23,6 +23,8 @@ export type DeviceConfig = {
 export type LocalAudioOutputContextType = {
   isAudioOn: boolean;
   toggleAudio: () => void;
+  setVolume: (volume: number) => void;
+  getVolume: () => number;
 };
 
 export type LocalVideoContextType = {
@@ -41,7 +43,7 @@ export enum MeetingStatus {
   Loading,
   Succeeded,
   Failed,
-  Ended
+  Ended,
 }
 
 export type RosterAttendeeType = {
