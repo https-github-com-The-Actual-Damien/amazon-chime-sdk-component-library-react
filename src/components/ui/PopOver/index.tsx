@@ -119,6 +119,7 @@ export const PopOver: FC<PopOverProps> = ({
   useClickOutside(menuRef, () => setIsOpen(false));
   useTabOutside(menuRef, () => setIsOpen(false));
 
+  console.log('isSubMenu', isSubMenu, 'isOpen', isOpen);
   return (
     <span ref={menuRef} onKeyDown={handleKeyUp} data-testid="popover">
       <Manager>
