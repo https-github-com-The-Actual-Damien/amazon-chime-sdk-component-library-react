@@ -50,7 +50,7 @@ const getFocusableElements = (node: HTMLElement): NodeListOf<HTMLElement> => {
   return node.querySelectorAll('button, [href]');
 };
 
-export const PopOver: FC<PopOverProps> = ({
+export const PopSubMenu: FC<PopOverProps> = ({
   renderButton,
   renderButtonWrapper,
   children,
@@ -133,8 +133,7 @@ export const PopOver: FC<PopOverProps> = ({
               'data-testid': 'popover-toggle',
             };
             const mouseFunction = {
-              onMouseOver: () => setIsOpen(true),
-              onMouseLeave: (e: any) => closePopover(e),
+              onMouseOver: () => setIsOpen(false),
             };
             if (isSubMenu) props = { ...props, ...mouseFunction };
 
@@ -181,4 +180,4 @@ export const PopOver: FC<PopOverProps> = ({
   );
 };
 
-export default PopOver;
+export default PopSubMenu;
