@@ -44,6 +44,8 @@ export interface PopOverProps
   a11yLabel: string;
   /** The elements that populate the menu */
   children: any;
+  /** Defines the function to render the inner contents of the popover button hover element */
+  mouseHover?: (isActive: boolean) => {};
 }
 
 const getFocusableElements = (node: HTMLElement): NodeListOf<HTMLElement> => {
@@ -58,6 +60,7 @@ export const PopOver: FC<PopOverProps> = ({
   placement = 'bottom-start',
   a11yLabel,
   className,
+  mouseHover,
   ...rest
 }) => {
   const menuRef = createRef<HTMLSpanElement>();
