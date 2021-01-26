@@ -134,7 +134,6 @@ export const PopOver: FC<PopOverProps> = ({
             };
             const mouseFunction = {
               onMouseOver: () => setIsOpen(true),
-              onMouseLeave: (e: any) => closePopover(e),
             };
             if (isSubMenu) props = { ...props, ...mouseFunction };
 
@@ -166,10 +165,7 @@ export const PopOver: FC<PopOverProps> = ({
                 ref={ref}
                 style={style}
                 data-testid="menu"
-                className={classnames('ch-popover-menu', {
-                  'submenu-poperOpen': isSubMenu,
-                })}
-                data-menu="submenu-poperOpen"
+                className="ch-popover-menu"
               >
                 {children}
               </StyledPopOverMenu>

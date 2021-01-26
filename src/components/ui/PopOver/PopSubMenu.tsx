@@ -137,11 +137,6 @@ export const PopSubMenu: FC<PopOverProps> = ({
               'aria-expanded': isOpen,
               'data-testid': 'popover-toggle',
             };
-            // const mouseFunction = {
-            //   onMouseLeave: () => setIsOpen(false),
-            // };
-            // if (isSubMenu) props = { ...props, ...mouseFunction };
-
             if (renderButton) {
               return (
                 <StyledPopOverToggle {...props}>
@@ -170,10 +165,7 @@ export const PopSubMenu: FC<PopOverProps> = ({
                 ref={ref}
                 style={style}
                 data-testid="menu"
-                className={classnames('ch-popover-menu', {
-                  'submenu-poperOpen': isSubMenu,
-                })}
-                data-menu="submenu-poperOpen"
+                className="ch-popover-menu"
               >
                 {children}
               </StyledPopOverMenu>
