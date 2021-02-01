@@ -87,7 +87,22 @@ export const StyledSubMenu = styled(StyledPopOverItem)`
     display: block;
     height: 2rem;
   }
-
+  & .hovered {
+    button {
+      &:hover {
+        background-color: #004ddb !important;
+        color: #ffffff !important;
+        outline: 0 !important;
+      }
+    }
+  }
+  & .not-hovered {
+    button {
+      background-color: transparent !important;
+      color: #50545e !important;
+      outline: 0 !important;
+    }
+  }
   > button {
     position: relative;
   }

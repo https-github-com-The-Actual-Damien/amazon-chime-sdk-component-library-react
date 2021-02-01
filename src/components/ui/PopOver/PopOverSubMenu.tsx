@@ -37,7 +37,6 @@ export const PopOverSubMenu: FC<PopOverSubMenuProps> = ({
     <StyledSubMenu>
       <PopOver
         renderButton={(isOpen) => getButtonContents(isOpen)}
-        // onMouseOver={() => getButtonContents(true)}
         placement="right-start"
         isSubMenu
         a11yLabel={text}

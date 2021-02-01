@@ -60,18 +60,19 @@ export const PopSubMenu: FC<PopOverProps> = ({
   className,
   ...rest
 }) => {
-  const menuRef = createRef<HTMLSpanElement>();
+  const subMenuRef = createRef<HTMLSpanElement>();
   const [isOpen, setIsOpen] = useState(false);
+  const [isListActive, setClass] = useState(false);
 
   useEffect(() => {
-    if (isOpen && !!menuRef.current) {
-      const nodes = getFocusableElements(menuRef.current);
+    if (isOpen && !!subMenuRef.current) {
+      const nodes = getFocusableElements(subMenuRef.current);
       !!nodes && nodes[0].focus();
     }
   }, [isOpen]);
 
   const move = (direction: string) => {
-    const node = menuRef.current;
+    const node = subMenuRef.current;
 
     if (isSubMenu) {
       // the parent menu can access
@@ -113,16 +114,23 @@ export const PopSubMenu: FC<PopOverProps> = ({
     }
   };
 
-  useClickOutside(menuRef, () => setIsOpen(false));
-  useTabOutside(menuRef, () => setIsOpen(false));
+  useClickOutside(subMenuRef, () => setIsOpen(false));
+  useTabOutside(subMenuRef, () => setIsOpen(false));
 
-  // console.log('menuRef', menuRef, 'subMenuRef', subMenuRef);
   return (
     <span
-      ref={menuRef}
+      ref={subMenuRef}
       onKeyDown={handleKeyUp}
       data-testid="popover"
-      onMouseLeave={() => setIsOpen(false)}
+      onMouseLeave={() => {
+        setIsOpen(false);
+        setClass(false);
+      }}
+      onMouseOver={() => setClass(true)}
+      className={classnames(
+        { hovered: isListActive },
+        { 'not-hovered': !isListActive }
+      )}
     >
       <Manager>
         <Reference>
@@ -137,10 +145,6 @@ export const PopSubMenu: FC<PopOverProps> = ({
               'aria-expanded': isOpen,
               'data-testid': 'popover-toggle',
             };
-            // const mouseFunction = {
-            //   onMouseLeave: () => setIsOpen(false),
-            // };
-            // if (isSubMenu) props = { ...props, ...mouseFunction };
 
             if (renderButton) {
               return (
