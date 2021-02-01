@@ -49,7 +49,13 @@ export enum MeetingStatus {
 export type RosterAttendeeType = {
   chimeAttendeeId: string;
   externalUserId?: string;
-  name?: string;
+  uid?: string;
+  firstName?: string;
+  lastName?: string;
+  companyName?: string;
+  companyTitle?: string;
+  role?: string;
+  fullName?: string;
 };
 
 export type RosterType = {

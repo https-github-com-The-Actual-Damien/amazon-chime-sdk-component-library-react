@@ -60,10 +60,7 @@ const RosterProvider: React.FC = ({ children }) => {
       }
 
       if (meetingManager.getAttendee) {
-        const externalData = await meetingManager.getAttendee(
-          attendeeId,
-          externalUserId
-        );
+        const externalData = await meetingManager.getAttendee(externalUserId);
 
         attendee = { ...attendee, ...externalData };
       }

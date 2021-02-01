@@ -13,13 +13,13 @@ import {
   MeetingSessionStatusCode,
   AudioVideoObserver,
   MultiLogger,
-  MeetingSessionPOSTLogger
+  MeetingSessionPOSTLogger,
 } from 'amazon-chime-sdk-js';
 
 import {
   audioInputSelectionToDevice,
   supportsSetSinkId,
-  videoInputSelectionToDevice
+  videoInputSelectionToDevice,
 } from '../../utils/device-utils';
 import { MeetingStatus } from '../../types';
 import {
@@ -28,7 +28,7 @@ import {
   AttendeeResponse,
   FullDeviceInfoType,
   PostLogConfig,
-  ManagerConfig
+  ManagerConfig,
 } from './types';
 
 export class MeetingManager implements AudioVideoObserver {
@@ -48,10 +48,7 @@ export class MeetingManager implements AudioVideoObserver {
 
   meetingRegion: string | null = null;
 
-  getAttendee?: (
-    chimeAttendeeId: string,
-    externalUserId?: string
-  ) => Promise<AttendeeResponse>;
+  getAttendee?: (externalUserId?: string) => Promise<AttendeeResponse>;
 
   selectedAudioOutputDevice: string | null = null;
 
@@ -136,7 +133,7 @@ export class MeetingManager implements AudioVideoObserver {
     if (this.simulcastEnabled) {
       this.configuration.enableUnifiedPlanForChromiumBasedBrowsers = true;
       this.configuration.enableSimulcastForUnifiedPlanChromiumBasedBrowsers = true;
-    };
+    }
 
     this.meetingRegion = meetingInfo.MediaRegion;
     this.meetingId = this.configuration.meetingId;
@@ -243,7 +240,7 @@ export class MeetingManager implements AudioVideoObserver {
 
     this.audioVideoObservers = {
       audioVideoDidStart: this.audioVideoDidStart,
-      audioVideoDidStop: this.audioVideoDidStop
+      audioVideoDidStop: this.audioVideoDidStop,
     };
 
     this.audioVideo.addObserver(this.audioVideoObservers);
@@ -265,7 +262,7 @@ export class MeetingManager implements AudioVideoObserver {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
-          video: true
+          video: true,
         });
         this.devicePermissionStatus = DevicePermissionStatus.GRANTED;
         this.publishDevicePermissionStatus();
@@ -286,7 +283,7 @@ export class MeetingManager implements AudioVideoObserver {
 
     this.activeSpeakerListener = (activeSpeakers: string[]) => {
       this.activeSpeakers = activeSpeakers;
-      this.activeSpeakerCallbacks.forEach(cb => cb(activeSpeakers));
+      this.activeSpeakerCallbacks.forEach((cb) => cb(activeSpeakers));
     };
 
     this.audioVideo?.subscribeToActiveSpeakerDetector(
@@ -405,12 +402,12 @@ export class MeetingManager implements AudioVideoObserver {
     callbackToRemove: (av: AudioVideoFacade | null) => void
   ): void => {
     this.audioVideoCallbacks = this.audioVideoCallbacks.filter(
-      callback => callback !== callbackToRemove
+      (callback) => callback !== callbackToRemove
     );
   };
 
   publishAudioVideo = () => {
-    this.audioVideoCallbacks.forEach(callback => {
+    this.audioVideoCallbacks.forEach((callback) => {
       callback(this.audioVideo);
     });
   };
@@ -426,12 +423,12 @@ export class MeetingManager implements AudioVideoObserver {
     callbackToRemove: (activeSpeakers: string[]) => void
   ): void => {
     this.activeSpeakerCallbacks = this.activeSpeakerCallbacks.filter(
-      callback => callback !== callbackToRemove
+      (callback) => callback !== callbackToRemove
     );
   };
 
   publishActiveSpeaker = () => {
-    this.activeSpeakerCallbacks.forEach(callback => {
+    this.activeSpeakerCallbacks.forEach((callback) => {
       callback(this.activeSpeakers);
     });
   };
@@ -446,7 +443,7 @@ export class MeetingManager implements AudioVideoObserver {
     callbackToRemove: (permission: string) => void
   ): void => {
     this.devicePermissionsObservers = this.devicePermissionsObservers.filter(
-      callback => callback !== callbackToRemove
+      (callback) => callback !== callbackToRemove
     );
   };
 
@@ -467,7 +464,7 @@ export class MeetingManager implements AudioVideoObserver {
     callbackToRemove: (deviceId: string | null) => void
   ): void => {
     this.selectedVideoInputDeviceObservers = this.selectedVideoInputDeviceObservers.filter(
-      callback => callback !== callbackToRemove
+      (callback) => callback !== callbackToRemove
     );
   };
 
@@ -488,7 +485,7 @@ export class MeetingManager implements AudioVideoObserver {
     callbackToRemove: (deviceId: string | null) => void
   ): void => {
     this.selectedAudioInputDeviceObservers = this.selectedAudioInputDeviceObservers.filter(
-      callback => callback !== callbackToRemove
+      (callback) => callback !== callbackToRemove
     );
   };
 
@@ -509,7 +506,7 @@ export class MeetingManager implements AudioVideoObserver {
     callbackToRemove: (deviceId: string | null) => void
   ): void => {
     this.selectedAudioOutputDeviceObservers = this.selectedAudioOutputDeviceObservers.filter(
-      callback => callback !== callbackToRemove
+      (callback) => callback !== callbackToRemove
     );
   };
 
@@ -535,12 +532,12 @@ export class MeetingManager implements AudioVideoObserver {
     callbackToRemove: (meetingStatus: MeetingStatus) => void
   ): void => {
     this.meetingStatusObservers = this.meetingStatusObservers.filter(
-      callback => callback !== callbackToRemove
+      (callback) => callback !== callbackToRemove
     );
   };
 
   private publishMeetingStatus = () => {
-    this.meetingStatusObservers.forEach(callback => {
+    this.meetingStatusObservers.forEach((callback) => {
       callback(this.meetingStatus);
     });
   };

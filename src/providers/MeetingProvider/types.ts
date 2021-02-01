@@ -16,7 +16,13 @@ export interface MeetingJoinData {
 }
 
 export interface AttendeeResponse {
-  name?: string;
+  uid: string;
+  firstName: string;
+  lastName: string;
+  companyName?: string;
+  companyTitle?: string;
+  role?: string;
+  fullName: string;
 }
 
 export type FullDeviceInfoType = {
