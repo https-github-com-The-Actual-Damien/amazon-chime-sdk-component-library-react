@@ -8,6 +8,7 @@ import { useAudioVideo } from '../../providers/AudioVideoProvider';
 import useAttendeeAudioStatus from './useAttendeeAudioStatus';
 
 interface RosterAttendeeStatus {
+  volume: number;
   muted: boolean;
   videoEnabled: boolean;
   sharingContent: boolean;

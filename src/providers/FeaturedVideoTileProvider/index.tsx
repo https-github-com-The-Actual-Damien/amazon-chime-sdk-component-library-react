@@ -15,6 +15,7 @@ import { useMeetingManager } from '../MeetingProvider';
 
 interface FeaturedTileState {
   tileId: number | null;
+  attendeeId: string | null;
 }
 
 const TILE_TRANSITION_DELAY = 1500;
@@ -26,6 +27,7 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
   const { attendeeIdToTileId } = useRemoteVideoTileState();
   const activeTileRef = useRef<number | null>(null);
   const [activeTile, setActiveTile] = useState<number | null>(null);
+  const [attendeeId, setAttendeeId] = useState<string | null>(null);
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingAttendee = useRef<string | null>(null);
 
@@ -37,7 +39,7 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
         return;
       }
 
-      pendingAttendee.current = activeId;
+      // pendingAttendee.current = activeId;
 
       if (timeout.current) {
         clearTimeout(timeout.current);
@@ -49,34 +51,18 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
         return;
       }
 
-      const tileId = attendeeIdToTileId[activeId];
-
-      if (!tileId) {
-        if (activeTileRef.current) {
-          timeout.current = setTimeout(() => {
-            activeTileRef.current = null;
-            setActiveTile(null);
-          }, TILE_TRANSITION_DELAY);
-        }
-
-        return;
-      }
-
-      if (tileId === activeTileRef.current) {
-        return;
+      if (!pendingAttendee.current) {
+        pendingAttendee.current = activeId;
+        setAttendeeId(activeId);
+      } else {
+        timeout.current = setTimeout(() => {
+          pendingAttendee.current = activeId;
+          setAttendeeId(activeId);
+        }, TILE_TRANSITION_DELAY);
       }
 
       // Set featured tile immediately if there is no current featured tile.
       // Otherwise, delay it to avoid tiles jumping around too frequently
-      if (!activeTileRef.current) {
-        activeTileRef.current = tileId;
-        setActiveTile(tileId);
-      } else {
-        timeout.current = setTimeout(() => {
-          activeTileRef.current = tileId;
-          setActiveTile(tileId);
-        }, TILE_TRANSITION_DELAY);
-      }
     };
 
     meetingManager.subscribeToActiveSpeaker(activeSpeakerCallback);
@@ -88,6 +74,7 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
   const value = useMemo(
     () => ({
       tileId: activeTile,
+      attendeeId: attendeeId,
     }),
     [activeTile]
   );
