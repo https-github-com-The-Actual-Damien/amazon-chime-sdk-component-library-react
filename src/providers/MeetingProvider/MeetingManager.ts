@@ -21,7 +21,7 @@ import {
   supportsSetSinkId,
   videoInputSelectionToDevice,
 } from '../../utils/device-utils';
-import { MeetingStatus } from '../../types';
+import { MeetingStatus, SessionConnection } from '../../types';
 import {
   DevicePermissionStatus,
   MeetingJoinData,
@@ -92,6 +92,8 @@ export class MeetingManager implements AudioVideoObserver {
 
   simulcastEnabled: boolean = false;
 
+  sessionConnection: SessionConnection | null = null;
+
   constructor(config: ManagerConfig) {
     this.logLevel = config.logLevel;
 
@@ -122,6 +124,7 @@ export class MeetingManager implements AudioVideoObserver {
     this.publishMeetingStatus();
     this.meetingStatusObservers = [];
     this.audioVideoObservers = {};
+    this.sessionConnection = null;
   }
 
   async join({ meetingInfo, attendeeInfo }: MeetingJoinData) {
@@ -215,6 +218,13 @@ export class MeetingManager implements AudioVideoObserver {
     return logger;
   }
 
+  audioVideoDidStartConnecting = (reconnecting: boolean) => {
+    this.sessionConnection = reconnecting
+      ? SessionConnection.Reconnecting
+      : SessionConnection.Connecting;
+    this.publishMeetingStatus();
+  };
+
   audioVideoDidStart = () => {
     console.log(
       '[MeetingManager audioVideoDidStart] Meeting started successfully'
@@ -241,6 +251,7 @@ export class MeetingManager implements AudioVideoObserver {
     this.audioVideoObservers = {
       audioVideoDidStart: this.audioVideoDidStart,
       audioVideoDidStop: this.audioVideoDidStop,
+      audioVideoDidStartConnecting: this.audioVideoDidStartConnecting,
     };
 
     this.audioVideo.addObserver(this.audioVideoObservers);

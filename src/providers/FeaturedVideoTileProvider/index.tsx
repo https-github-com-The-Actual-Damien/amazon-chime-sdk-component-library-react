@@ -10,7 +10,6 @@ import React, {
   useMemo,
 } from 'react';
 
-import { useRemoteVideoTileState } from '../RemoteVideoTileProvider';
 import { useMeetingManager } from '../MeetingProvider';
 
 interface FeaturedTileState {
@@ -24,7 +23,6 @@ const FeaturedTileContext = createContext<FeaturedTileState | null>(null);
 
 const FeaturedVideoTileProvider: React.FC = ({ children }) => {
   const meetingManager = useMeetingManager();
-  const { attendeeIdToTileId } = useRemoteVideoTileState();
   const activeTileRef = useRef<number | null>(null);
   const [activeTile, setActiveTile] = useState<number | null>(null);
   const [attendeeId, setAttendeeId] = useState<string | null>(null);
@@ -47,7 +45,9 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
 
       if (!activeId) {
         activeTileRef.current = null;
+        pendingAttendee.current = null;
         setActiveTile(null);
+        setAttendeeId(null);
         return;
       }
 
@@ -69,14 +69,14 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
 
     return () =>
       meetingManager.unsubscribeFromActiveSpeaker(activeSpeakerCallback);
-  }, [attendeeIdToTileId]);
+  }, []);
 
   const value = useMemo(
     () => ({
       tileId: activeTile,
       attendeeId: attendeeId,
     }),
-    [activeTile]
+    [activeTile, attendeeId]
   );
 
   return (

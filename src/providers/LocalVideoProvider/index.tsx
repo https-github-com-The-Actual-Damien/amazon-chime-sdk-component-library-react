@@ -43,6 +43,7 @@ const LocalVideoProvider: React.FC = ({ children }) => {
     if (isVideoEnabled || !meetingManager.selectedVideoInputDevice) {
       audioVideo?.stopLocalVideoTile();
       setIsVideoEnabled(false);
+      await audioVideo?.chooseVideoInputDevice(null);
     } else {
       await audioVideo?.chooseVideoInputDevice(
         videoInputSelectionToDevice(meetingManager.selectedVideoInputDevice)

@@ -46,6 +46,11 @@ export enum MeetingStatus {
   Ended,
 }
 
+export enum SessionConnection {
+  Reconnecting,
+  Connecting,
+}
+
 export type RosterAttendeeType = {
   chimeAttendeeId: string;
   externalUserId?: string;
