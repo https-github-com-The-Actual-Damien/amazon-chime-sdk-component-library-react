@@ -55,6 +55,7 @@ export type RosterAttendeeType = {
   chimeAttendeeId: string;
   externalUserId?: string;
   uid?: string;
+  avatar?: string;
   firstName?: string;
   lastName?: string;
   companyName?: string;
