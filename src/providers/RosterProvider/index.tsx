@@ -67,10 +67,17 @@ const RosterProvider: React.FC = ({ children }) => {
 
       rosterRef.current[attendeeId] = attendee;
 
-      setRoster((oldRoster) => ({
-        ...oldRoster,
-        [attendeeId]: attendee,
-      }));
+      if (attendee && attendee.role && attendee.role === 'presenter') {
+        setRoster((oldRoster) => ({
+          [attendeeId]: attendee,
+          ...oldRoster,
+        }));
+      } else {
+        setRoster((oldRoster) => ({
+          ...oldRoster,
+          [attendeeId]: attendee,
+        }));
+      }
     };
 
     audioVideo.realtimeSubscribeToAttendeeIdPresence(rosterUpdateCallback);
