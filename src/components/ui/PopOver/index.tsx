@@ -116,7 +116,8 @@ export const PopOver: FC<PopOverProps> = ({
   useClickOutside(menuRef, () => setIsOpen(false));
   useTabOutside(menuRef, () => setIsOpen(false));
 
-  // console.log('menuRef', menuRef, 'subMenuRef', subMenuRef);
+  // console.log('menuR/ef', menuRef, 'subMenuRef', subMenuRef);
+  console.log('11111111111111');
   return (
     <span ref={menuRef} onKeyDown={handleKeyUp} data-testid="popover">
       <Manager>
@@ -132,11 +133,11 @@ export const PopOver: FC<PopOverProps> = ({
               'aria-expanded': isOpen,
               'data-testid': 'popover-toggle',
             };
-            const mouseFunction = {
-              onMouseOver: () => setIsOpen(true),
-              onMouseLeave: (e: any) => closePopover(e),
-            };
-            if (isSubMenu) props = { ...props, ...mouseFunction };
+            // const mouseFunction = {
+            //   onMouseOver: () => setIsOpen(true),
+            //   onMouseLeave: (e: any) => closePopover(e),
+            // };
+            // if (isSubMenu) props = { ...props, ...mouseFunction };
 
             if (renderButton) {
               return (
