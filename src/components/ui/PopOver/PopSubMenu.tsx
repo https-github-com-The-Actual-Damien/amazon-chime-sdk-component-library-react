@@ -116,7 +116,6 @@ export const PopSubMenu: FC<PopOverProps> = ({
 
   useClickOutside(subMenuRef, () => setIsOpen(false));
   useTabOutside(subMenuRef, () => setIsOpen(false));
-  console.log("222222222222222")
 
   return (
     <span
