@@ -61,7 +61,9 @@ export type RosterAttendeeType = {
   companyName?: string;
   companyTitle?: string;
   role?: string;
-  avatar?: string;
+  cardIndex: number;
+  order: number;
+  isPinned: boolean;
   fullName?: string;
 };
 
