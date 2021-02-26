@@ -39,7 +39,6 @@ const RosterProvider: React.FC = ({ children }) => {
 
   const roosterPrecendence = () => {
       setRoster((oldRoster) => {
-          console.log('oldRoster ==== ', oldRoster);
           const roosterAttendee = Object.values(oldRoster);
           const presenters = roosterAttendee.filter((x: RosterAttendeeType) => x.role && x.role.toLowerCase() === 'presenter' &&
               !pinnedAttendees.includes(x.chimeAttendeeId))
