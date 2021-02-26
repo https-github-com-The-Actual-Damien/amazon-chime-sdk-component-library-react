@@ -222,7 +222,6 @@ export class MeetingManager implements AudioVideoObserver {
     this.sessionConnection = reconnecting
       ? SessionConnection.Reconnecting
       : SessionConnection.Connecting;
-    this.publishMeetingStatus();
   };
 
   audioVideoDidStart = () => {
