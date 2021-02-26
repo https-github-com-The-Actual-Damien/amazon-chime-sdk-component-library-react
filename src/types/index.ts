@@ -61,6 +61,7 @@ export type RosterAttendeeType = {
   companyName?: string;
   companyTitle?: string;
   role?: string;
+  avatar?: string;
   fullName?: string;
 };
 
