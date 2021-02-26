@@ -10,11 +10,10 @@ import { RosterType, RosterAttendeeType } from '../../types';
 
 interface RosterContextValue {
   roster: RosterType;
-  togglePinned: (attendeeId: string) => void;
 }
 
 const RosterContext = React.createContext<RosterContextValue | null>(null);
-const pinnedAttendees: string[] = [];
+
 let cardIndex: number = 0;
 const RosterProvider: React.FC = ({ children }) => {
   const meetingManager = useMeetingManager();
@@ -23,56 +22,6 @@ const RosterProvider: React.FC = ({ children }) => {
   const [roster, setRoster] = useState<RosterType>({});
 
   meetingManager.getAttendee;
-
-  const togglePinned = (attendeeId: string) => {
-      const pinnedattendee = [...pinnedAttendees];
-      const foundIndex = pinnedattendee.findIndex(
-          (chimeId: string) => chimeId === attendeeId
-      );
-      if (foundIndex !== -1) {
-          pinnedAttendees.splice(foundIndex, 1);
-      } else {
-          pinnedAttendees.push(attendeeId);
-      }
-      roosterPrecendence();
-  };
-
-  const roosterPrecendence = () => {
-      setRoster((oldRoster) => {
-          const roosterAttendee = Object.values(oldRoster);
-          const presenters = roosterAttendee.filter((x: RosterAttendeeType) => x.role && x.role.toLowerCase() === 'presenter' &&
-              !pinnedAttendees.includes(x.chimeAttendeeId))
-              .sort((a: RosterAttendeeType, b: RosterAttendeeType) => (a.cardIndex > b.cardIndex ? 1 : -1));
-          const pinnedPresenters = roosterAttendee.filter((x: RosterAttendeeType) => x.role && x.role.toLowerCase() === 'presenter' &&
-              pinnedAttendees.includes(x.chimeAttendeeId))
-              .sort((a: RosterAttendeeType, b: RosterAttendeeType) => (a.cardIndex > b.cardIndex ? 1 : -1));
-          const pinnedAttendee = roosterAttendee
-              .filter(
-                  (x: RosterAttendeeType) =>
-                      x.role !== undefined && x.role.toLowerCase() !== 'presenter' &&
-                      pinnedAttendees.includes(x.chimeAttendeeId)
-              )
-              .sort((a: RosterAttendeeType, b: RosterAttendeeType) => (a.cardIndex > b.cardIndex ? 1 : -1));
-          const regularAttendees = roosterAttendee
-              .filter(
-                  (x: RosterAttendeeType) =>
-                      x.role !== undefined && x.role.toLowerCase() !== 'presenter' &&
-                      !pinnedAttendees.includes(x.chimeAttendeeId)
-              )
-              .sort((a: RosterAttendeeType, b: RosterAttendeeType) => (a.cardIndex > b.cardIndex ? 1 : -1));
-          const allattendees = [...pinnedPresenters.concat(presenters).concat(pinnedAttendee).concat(regularAttendees)];
-          const attendees = allattendees.map((attendee: RosterAttendeeType, index: number) => {
-              attendee.order = index;
-              attendee.isPinned = pinnedAttendees.includes(attendee.chimeAttendeeId);
-              return attendee;
-          });
-          const modifiedRoster: RosterType = {};
-          attendees.forEach((attendee: RosterAttendeeType) => {
-              modifiedRoster[attendee.chimeAttendeeId] = attendee;
-          });
-          return modifiedRoster;
-      });
-  };
 
   useEffect(() => {
     if (!audioVideo) {
@@ -122,7 +71,6 @@ const RosterProvider: React.FC = ({ children }) => {
           [attendeeId]: attendee,
           ...oldRoster,
       }));
-      roosterPrecendence();
       /*if (attendee && attendee.role && attendee.role === 'presenter') {
         setRoster((oldRoster) => ({
           [attendeeId]: attendee,
@@ -147,9 +95,9 @@ const RosterProvider: React.FC = ({ children }) => {
 
   const value = useMemo(
     () => ({
-      roster, togglePinned
+      roster
     }),
-    [roster, togglePinned]
+    [roster]
   );
 
   return (
