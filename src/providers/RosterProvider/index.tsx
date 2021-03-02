@@ -34,7 +34,7 @@ const RosterProvider: React.FC = ({ children }) => {
     ): Promise<void> => {
       if (!present) {
         delete rosterRef.current[chimeAttendeeId];
-
+        audioVideo.realtimeUnsubscribeFromVolumeIndicator(chimeAttendeeId);
         setRoster((currentRoster: RosterType) => {
           const { [chimeAttendeeId]: _, ...rest } = currentRoster;
           return { ...rest };
