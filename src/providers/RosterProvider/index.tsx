@@ -14,11 +14,12 @@ interface RosterContextValue {
 
 const RosterContext = React.createContext<RosterContextValue | null>(null);
 
-let cardIndex: number = 0;
+
 const RosterProvider: React.FC = ({ children }) => {
   const meetingManager = useMeetingManager();
   const audioVideo = useAudioVideo();
   const rosterRef = useRef<RosterType>({});
+  const cardIndexRef = useRef<number>(0);
   const [roster, setRoster] = useState<RosterType>({});
 
   meetingManager.getAttendee;
@@ -35,7 +36,7 @@ const RosterProvider: React.FC = ({ children }) => {
     ): Promise<void> => {
       if (!present) {
         delete rosterRef.current[chimeAttendeeId];
-
+        audioVideo.realtimeUnsubscribeFromVolumeIndicator(chimeAttendeeId);
         setRoster((currentRoster: RosterType) => {
           const { [chimeAttendeeId]: _, ...rest } = currentRoster;
           return { ...rest };
@@ -54,7 +55,7 @@ const RosterProvider: React.FC = ({ children }) => {
         return;
       }
 
-      let attendee: RosterAttendeeType = { chimeAttendeeId, order: 0, cardIndex: ++cardIndex, isPinned: false };
+      let attendee: RosterAttendeeType = { chimeAttendeeId, order: 0, cardIndex: ++cardIndexRef.current, isPinned: false };
 
       if (externalUserId) {
         attendee.externalUserId = externalUserId;
