@@ -1,9 +1,16 @@
 // Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useState, useEffect, useRef, useMemo, useContext } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useContext,
+  useReducer,
+} from 'react';
 import { DefaultModality } from 'amazon-chime-sdk-js';
-
+import { initialState, reducer, VideoTileActionType } from './state';
 import { useMeetingManager } from '../MeetingProvider';
 import { useAudioVideo } from '../AudioVideoProvider';
 import { RosterType, RosterAttendeeType } from '../../types';
@@ -14,13 +21,12 @@ interface RosterContextValue {
 
 const RosterContext = React.createContext<RosterContextValue | null>(null);
 
-
 const RosterProvider: React.FC = ({ children }) => {
   const meetingManager = useMeetingManager();
   const audioVideo = useAudioVideo();
   const rosterRef = useRef<RosterType>({});
   const cardIndexRef = useRef<number>(0);
-  const [roster, setRoster] = useState<RosterType>({});
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   meetingManager.getAttendee;
 
@@ -37,9 +43,11 @@ const RosterProvider: React.FC = ({ children }) => {
       if (!present) {
         delete rosterRef.current[chimeAttendeeId];
         audioVideo.realtimeUnsubscribeFromVolumeIndicator(chimeAttendeeId);
-        setRoster((currentRoster: RosterType) => {
-          const { [chimeAttendeeId]: _, ...rest } = currentRoster;
-          return { ...rest };
+        dispatch({
+          type: VideoTileActionType.REMOVE,
+          payload: {
+            chimeAttendeeId,
+          },
         });
 
         return;
@@ -55,7 +63,12 @@ const RosterProvider: React.FC = ({ children }) => {
         return;
       }
 
-      let attendee: RosterAttendeeType = { chimeAttendeeId, order: 0, cardIndex: ++cardIndexRef.current, isPinned: false };
+      let attendee: RosterAttendeeType = {
+        chimeAttendeeId,
+        order: 0,
+        cardIndex: ++cardIndexRef.current,
+        isPinned: false,
+      };
 
       if (externalUserId) {
         attendee.externalUserId = externalUserId;
@@ -68,10 +81,17 @@ const RosterProvider: React.FC = ({ children }) => {
       }
 
       rosterRef.current[attendeeId] = attendee;
-      setRoster((oldRoster) => ({
-          [attendeeId]: attendee,
-          ...oldRoster,
-      }));
+      dispatch({
+        type: VideoTileActionType.UPDATE,
+        payload: {
+          attendee,
+          chimeAttendeeId,
+        },
+      });
+      // setRoster((oldRoster) => ({
+      //   [attendeeId]: attendee,
+      //   ...oldRoster,
+      // }));
       /*if (attendee && attendee.role && attendee.role === 'presenter') {
         setRoster((oldRoster) => ({
           [attendeeId]: attendee,
@@ -88,7 +108,6 @@ const RosterProvider: React.FC = ({ children }) => {
     audioVideo.realtimeSubscribeToAttendeeIdPresence(rosterUpdateCallback);
 
     return () => {
-      setRoster({});
       rosterRef.current = {};
       audioVideo.realtimeUnsubscribeToAttendeeIdPresence(rosterUpdateCallback);
     };
@@ -96,9 +115,9 @@ const RosterProvider: React.FC = ({ children }) => {
 
   const value = useMemo(
     () => ({
-      roster
+      roster: state.roaster,
     }),
-    [roster]
+    [state.roaster]
   );
 
   return (
