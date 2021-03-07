@@ -30,10 +30,6 @@ export const StyledChatBubbleContainer = styled.div<
     padding-right: ${(props) => (props.actions ? '1rem' : '2.5rem')};
   }
 
-  .ch-popover-toggle {
-    height: 1.5rem;
-  }
-
   ${baseSpacing}
   ${baseStyles}
 `;
@@ -55,9 +51,20 @@ export const StyledChatBubble = styled.div<StyledChatBubbleProps>`
   word-break: break-word;
   hyphens: auto;
 
+  & .ch-header {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
+    align-items: baseline;
+  }
+
   & .ch-sender-name {
     font-weight: bold;
-    margin-bottom: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  & .ch-header-timestamp {
+    font-size: 0.65rem;
   }
 
   & svg {

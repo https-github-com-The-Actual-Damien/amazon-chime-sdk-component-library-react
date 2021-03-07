@@ -1,5 +1,5 @@
 const { spawnSync } = require('child_process');
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 
 // Parameters
@@ -8,14 +8,16 @@ let region = 'us-east-1';
 let bucket = ``;
 let stack = ``;
 let useEventBridge = false;
+let disablePrintingLogs = false;
 
 function usage() {
   console.log(`Usage: deploy.sh [-r region] [-b bucket] [-s stack] [-a application] [-e]`);
-  console.log(`  -r, --region       Target region, default '${region}'`);
-  console.log(`  -b, --s3-bucket    S3 bucket for deployment, required`);
-  console.log(`  -s, --stack-name   CloudFormation stack name, required`);
-  console.log(`  -e, --event-bridge Enable EventBridge integration, default is no integration`);
-  console.log(`  -h, --help         Show help and exit`);
+  console.log(`  -r, --region                   Target region, default '${region}'`);
+  console.log(`  -b, --s3-bucket                S3 bucket for deployment, required`);
+  console.log(`  -s, --stack-name               CloudFormation stack name, required`);
+  console.log(`  -e, --event-bridge             Enable EventBridge integration, default is no integration`);
+  console.log(`  -l, --disable-printing-logs    Disable printing logs`);
+  console.log(`  -h, --help                     Show help and exit`);
 }
 
 function ensureBucket() {
@@ -73,6 +75,9 @@ function parseArgs() {
       case '--event-bridge':
         useEventBridge = true;
         break;
+      case '-l': case '--disable-printing-logs':
+        disablePrintingLogs = true;
+        break;
       default:
         console.log(`Invalid argument ${args[i]}`);
         usage();
@@ -87,7 +92,11 @@ function parseArgs() {
   }
 }
 
-function spawnOrFail(command, args, options) {
+function spawnOrFail(command, args, options, printOutput = true) {
+  options = {
+    ...options,
+    shell: true
+  };
   const cmd = spawnSync(command, args, options);
 
   if (cmd.error) {
@@ -95,7 +104,9 @@ function spawnOrFail(command, args, options) {
     process.exit(255);
   }
   const output = cmd.output.toString();
-  console.log(output);
+  if (printOutput) {
+    console.log(output);
+  }
   if (cmd.status !== 0) {
     console.log(`Command ${command} failed with exit code ${cmd.status} signal ${cmd.signal}`);
     console.log(cmd.stderr.toString());
@@ -109,12 +120,9 @@ function appHtml(appName) {
 }
 
 function ensureApp(appName = app) {
-  const appPath = appHtml(appName);
-
   console.log(`Building ${appName} application`);
   spawnOrFail('npm', ['run', 'build'], { cwd: path.join(__dirname, '..') });
-  spawnOrFail('npm', ['run', 'build:prod'], { cwd: path.join(__dirname, '..') });
-  spawnOrFail('cp', [appPath, `./src/index.html`]);
+  fs.copySync(appHtml('meeting'), './src/index.html');
 }
 
 function ensureTools() {
@@ -130,7 +138,7 @@ if (!fs.existsSync('build')) {
   fs.mkdirSync('build');
 }
 
-console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}`);
+console.log(`Using region ${region}, bucket ${bucket}, stack ${stack}, disable-printing-logs ${disablePrintingLogs}`);
 ensureBucket();
 
 spawnOrFail('sam', [
@@ -156,9 +164,11 @@ spawnOrFail('sam', [
   'CAPABILITY_IAM',
   '--region',
   `${region}`,
-]);
-console.log('Amazon Chime SDK Meeting Demo URL: ');
-const output = spawnOrFail('aws', [
+], null, !disablePrintingLogs);
+if (!disablePrintingLogs) {
+  console.log('Amazon Chime SDK Meeting Demo URL: ');
+}
+spawnOrFail('aws', [
   'cloudformation',
   'describe-stacks',
   '--stack-name',
@@ -169,4 +179,4 @@ const output = spawnOrFail('aws', [
   'text',
   '--region',
   `${region}`,
-]);
+], null, !disablePrintingLogs);

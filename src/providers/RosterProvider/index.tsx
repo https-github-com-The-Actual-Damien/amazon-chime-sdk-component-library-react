@@ -22,8 +22,6 @@ const RosterProvider: React.FC = ({ children }) => {
   const cardIndexRef = useRef<number>(0);
   const [roster, setRoster] = useState<RosterType>({});
 
-  meetingManager.getAttendee;
-
   useEffect(() => {
     if (!audioVideo) {
       return;
@@ -61,28 +59,23 @@ const RosterProvider: React.FC = ({ children }) => {
         attendee.externalUserId = externalUserId;
       }
 
+      rosterRef.current[attendeeId] = attendee;
+
+      // Update the roster first before waiting to fetch attendee info
+      setRoster((oldRoster) => ({
+        ...oldRoster,
+        [attendeeId]: attendee,
+      }));
+
       if (meetingManager.getAttendee) {
         const externalData = await meetingManager.getAttendee(externalUserId);
 
         attendee = { ...attendee, ...externalData };
+        setRoster((oldRoster) => ({
+          ...oldRoster,
+          [attendeeId]: attendee,
+        }));
       }
-
-      rosterRef.current[attendeeId] = attendee;
-      setRoster((oldRoster) => ({
-          [attendeeId]: attendee,
-          ...oldRoster,
-      }));
-      /*if (attendee && attendee.role && attendee.role === 'presenter') {
-        setRoster((oldRoster) => ({
-          [attendeeId]: attendee,
-          ...oldRoster,
-        }));
-      } else {
-        setRoster((oldRoster) => ({
-          ...oldRoster,
-          [attendeeId]: attendee,
-        }));
-      }*/
     };
 
     audioVideo.realtimeSubscribeToAttendeeIdPresence(rosterUpdateCallback);

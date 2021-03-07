@@ -26,7 +26,7 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
   const activeTileRef = useRef<number | null>(null);
   const [activeTile, setActiveTile] = useState<number | null>(null);
   const [attendeeId, setAttendeeId] = useState<string | null>(null);
-  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeout = useRef<number | null>(null);
   const pendingAttendee = useRef<string | null>(null);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const FeaturedVideoTileProvider: React.FC = ({ children }) => {
         pendingAttendee.current = activeId;
         setAttendeeId(activeId);
       } else {
-        timeout.current = setTimeout(() => {
+        timeout.current = window.setTimeout(() => {
           pendingAttendee.current = activeId;
           setAttendeeId(activeId);
         }, TILE_TRANSITION_DELAY);

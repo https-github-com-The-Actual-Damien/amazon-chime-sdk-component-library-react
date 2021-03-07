@@ -1,29 +1,28 @@
-<Meta title="SDK Hooks/useMeetingStatus" />
+<Meta title="SDK Hooks/useDevicePermissionStatus" />
 
-# useMeetingStatus
+# useDevicePermissionStatus
 
-The `useMeetingStatus` hook returns the meeting status from the enum below.
+The `useDevicePermissionStatus` hook returns the device permission status from the enum below.
 
 ```javascript
-enum MeetingStatus {
-  Loading,
-  Succeeded,
-  Failed,
-  Ended,
-  JoinedFromAnotherDevice
+enum DevicePermissionStatus {
+  UNSET = 'UNSET',
+  IN_PROGRESS = 'IN_PROGRESS',
+  GRANTED = 'GRANTED',
+  DENIED = 'DENIED',
 }
 ```
 
 ### Return Value
 
 ```javascript
-meetingStatus: MeetingStatus;
+permission: DevicePermissionStatus;
 ```
 
 ## Importing
 
 ```javascript
-import { useMeetingStatus } from 'amazon-chime-sdk-component-library-react';
+import { useDevicePermissionStatus } from 'amazon-chime-sdk-component-library-react';
 ```
 
 ## Usage
@@ -34,7 +33,8 @@ The hook depends on the `MeetingProvider`.
 import React from 'react';
 import {
   MeetingProvider,
-  useMeetingStatus
+  useDevicePermissionStatus,
+  DevicePermissionStatus,
 } from 'amazon-chime-sdk-component-library-react';
 
 const App = () => (

@@ -1,3 +1,5 @@
+// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -5,7 +7,60 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
+
+### Fixed
+
+- Fix removeEventListener bug for WithTooltip.
+
+### Added
+
+### Changed
+
+### Removed
+
+## [2.1.0] - 2021-02-24
+
+### Fixed
+- Fixed the `MicrophoneActivity` component's `className` prop
+  overridden by the `MicVolumeIndicator` component `className`.
+- NotificatonGroups don't accept pointer-events.
+- Clean up timeouts when `useFocusIn` and `useMouseMove` hooks are unmounted.
+
+### Added
+- Allow the `PopOver` UI component to stay open for multiple clicks.
+- Added `WithTooltip()` HOC and updated `RosterHeader`, `RosterCell`, `PopOverMenu`,
+  `PopOver`, `NavbarItem`, `ControlbarItem`, and `ChatBubbleConatiner` to support tooltips.
+- Added documentation for components that support tooltips, exposed `WithTooltip` component and related interfaces/types.
+
+### Changed
+- Render roster without waiting for getAtendee callback.
+- Update `MeetingProvider` and corresponding documentation to support
+  re-usable `MeetingManager` instance.
+
+
+### Removed
+
+## [2.0.1] - 2020-2-11
+
+### Fixed
+
+- Fix LocalVideo not rendering on initial attempt
+- Fix inconsistent snapshot for EditableChatBubble
+- [Docs] Fix mdx style rendering
+- Confirm video device exists when requesting user device permission
+
+### Added
+
+- Add JoinedFromAnotherDevice meeting status
+
+### Changed
+
+- Allow property passthough to IconButton in NavbarItem
+
+### Removed
+
+## [2.0.0] - 2020-2-8
 
 ### Fixed
 
@@ -14,7 +69,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Docs] Fix ContentShare docs
 - Fix non-overridable Mic prop in `RosterAttendee`
 - Fix incorrect fill-rule property on `ZoomIn` and `ZoomOut`
-- Fix meeting manager to handle `setSinkId` error
+- [Demo] Fix closing roster from stopping active speaker detection.
+- Fix serverless deploy script to work on Windows
+- [Tests] Update outdated snapshots
+- [Chat Demo] Fix double API calls on channel click.
+- NotificatonGroups don't accept pointer-events
 
 ### Added
 
@@ -22,7 +81,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Echo icon
 - Added poorConnection property to DeskPhone icon
 - Added optional 'id' prop for ui components
+- Added optional `timestamp` prop in ChatBubble
+- Added forwardRef for ChatBubbleContainer
+- Added optional img to MessageAttachment
 - Added a classname to PopOverMenu component for styling access
+- Added forwardRef for Textarea
+- Added `useDevicePermissionStatus` hook as an exported component from the library.
 - Added a "dismissible" prop to Modal to optionally allow persistent modals
 - Added ZoomIn and ZoomOut icons
 - Added style variants to Caution icon
@@ -30,11 +94,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update Jest major version
+- Changed RosterHeader 'title' prop to all for elements as well as strings
+- Changed senderName to optional in ChatBubble
+- Moved children inside of a div in ChatBubble
+- Changed `MeetingManager` to strictly enforce `DevicePermissionStatus` type.
+- Update `realtimeUnsubscribeFromVolumeIndicator` interface to also accept a callback param.
+- Refactored NavBar to allow static width
+- Refactored NavBarItem to use IconButton directly
 - Change control bar theme opacity to 1
+- [Chat Demo] Rename misspelled file names and imports
+- Set amazon-chime-sdk-js in package.json dependencies
 
 ### Removed
 
 - Remove playwright tests, scripts, and dependency
+- Removed content in ChatBubble
+- Removed showName in ChatBubble
+- Removed unused import statements from NavBar
+
+## [1.6.1] - 2020-12-25
+
+### Fixed
+
+- Fix meeting manager to handle `setSinkId` error
 
 ## [1.6.0] - 2020-12-14
 
