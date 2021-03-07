@@ -41,7 +41,8 @@ export enum MeetingStatus {
   Loading,
   Succeeded,
   Failed,
-  Ended
+  Ended,
+  JoinedFromAnotherDevice
 }
 
 export type RosterAttendeeType = {
@@ -52,4 +53,11 @@ export type RosterAttendeeType = {
 
 export type RosterType = {
   [attendeeId: string]: RosterAttendeeType;
+};
+
+export enum DevicePermissionStatus {
+  UNSET = 'UNSET',
+  IN_PROGRESS = 'IN_PROGRESS',
+  GRANTED = 'GRANTED',
+  DENIED = 'DENIED',
 };

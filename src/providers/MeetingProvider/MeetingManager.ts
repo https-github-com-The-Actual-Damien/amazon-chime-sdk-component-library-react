@@ -75,7 +75,7 @@ export class MeetingManager implements AudioVideoObserver {
 
   devicePermissionStatus = DevicePermissionStatus.UNSET;
 
-  devicePermissionsObservers: ((permission: string) => void)[] = [];
+  devicePermissionsObservers: ((permission: DevicePermissionStatus) => void)[] = [];
 
   activeSpeakerListener: ((activeSpeakers: string[]) => void) | null = null;
 
@@ -123,7 +123,6 @@ export class MeetingManager implements AudioVideoObserver {
     this.activeSpeakerListener = null;
     this.meetingStatus = MeetingStatus.Loading;
     this.publishMeetingStatus();
-    this.meetingStatusObservers = [];
     this.audioVideoObservers = {};
   }
 
@@ -232,6 +231,12 @@ export class MeetingManager implements AudioVideoObserver {
       console.log('[MeetingManager audioVideoDidStop] Meeting ended for all');
       this.meetingStatus = MeetingStatus.Ended;
       this.publishMeetingStatus();
+    } else if (sessionStatusCode === MeetingSessionStatusCode.AudioJoinedFromAnotherDevice) {
+      console.log('[MeetingManager audioVideoDidStop] Meeting joined from another device');
+      this.meetingStatus = MeetingStatus.JoinedFromAnotherDevice;
+      this.publishMeetingStatus();
+    } else {
+      console.log(`[MeetingManager audioVideoDidStop] session stopped with code ${sessionStatusCode}`);
     }
     this.leave();
   };
@@ -263,10 +268,16 @@ export class MeetingManager implements AudioVideoObserver {
       this.devicePermissionStatus = DevicePermissionStatus.IN_PROGRESS;
       this.publishDevicePermissionStatus();
       try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const hasVideoInput = devices.some(value => {
+          return value.kind === 'videoinput';
+        });
+
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
-          video: true
+          video: hasVideoInput
         });
+
         this.devicePermissionStatus = DevicePermissionStatus.GRANTED;
         this.publishDevicePermissionStatus();
         return stream;
@@ -437,13 +448,13 @@ export class MeetingManager implements AudioVideoObserver {
   };
 
   subscribeToDevicePermissionStatus = (
-    callback: (permission: string) => void
+    callback: (permission: DevicePermissionStatus) => void
   ): void => {
     this.devicePermissionsObservers.push(callback);
   };
 
   unsubscribeFromDevicePermissionStatus = (
-    callbackToRemove: (permission: string) => void
+    callbackToRemove: (permission: DevicePermissionStatus) => void
   ): void => {
     this.devicePermissionsObservers = this.devicePermissionsObservers.filter(
       callback => callback !== callbackToRemove

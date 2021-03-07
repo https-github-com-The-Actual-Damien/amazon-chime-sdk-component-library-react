@@ -55,6 +55,12 @@ export { ChatBubbleContainer } from './components/ui/Chat/ChatBubble/ChatBubbleC
 export { InfiniteList } from './components/ui/Chat/InfiniteList';
 export { MessageAttachment } from './components/ui/Chat/MessageAttachment';
 export { formatDate, formatTime } from './components/ui/Utilities';
+export {
+  WithTooltip,
+  Tooltipable,
+  ToolTipPositionType,
+  ToolTipProps,
+} from './components/ui/WithTooltip';
 
 // SDK components
 export {
@@ -136,6 +142,7 @@ export { useMeetingStatus } from './hooks/sdk/useMeetingStatus';
 export { useLocalAudioInputActivity } from './hooks/sdk/useLocalAudioInputActivity';
 export { useLocalAudioInputActivityPreview } from './hooks/sdk/useLocalAudioInputActivityPreview';
 export { useBandwidthMetrics } from './hooks/sdk/useBandwidthMetrics';
+export { useDevicePermissionStatus } from './hooks/sdk/useDevicePermissionStatus';
 
 // Providers
 export { NotificationProvider } from './providers/NotificationProvider';
@@ -160,7 +167,7 @@ export { lightTheme, darkTheme, GlobalStyles, StyledReset } from './theme';
 export { VideoQuality } from './hooks/sdk/useSelectVideoQuality';
 
 // enums
-export { MeetingStatus } from './types/index';
+export { MeetingStatus, DevicePermissionStatus } from './types/index';
 export { Severity, ActionType } from './providers/NotificationProvider';
 
 // Class
