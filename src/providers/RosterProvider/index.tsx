@@ -28,8 +28,6 @@ const RosterProvider: React.FC = ({ children }) => {
   const cardIndexRef = useRef<number>(0);
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  meetingManager.getAttendee;
-
   useEffect(() => {
     if (!audioVideo) {
       return;
@@ -74,6 +72,11 @@ const RosterProvider: React.FC = ({ children }) => {
         attendee.externalUserId = externalUserId;
       }
 
+      rosterRef.current[attendeeId] = attendee;
+
+      // Update the roster first before waiting to fetch attendee info
+
+
       if (meetingManager.getAttendee) {
         const externalData = await meetingManager.getAttendee(externalUserId);
 
@@ -88,21 +91,7 @@ const RosterProvider: React.FC = ({ children }) => {
           chimeAttendeeId,
         },
       });
-      // setRoster((oldRoster) => ({
-      //   [attendeeId]: attendee,
-      //   ...oldRoster,
-      // }));
-      /*if (attendee && attendee.role && attendee.role === 'presenter') {
-        setRoster((oldRoster) => ({
-          [attendeeId]: attendee,
-          ...oldRoster,
-        }));
-      } else {
-        setRoster((oldRoster) => ({
-          ...oldRoster,
-          [attendeeId]: attendee,
-        }));
-      }*/
+
     };
 
     audioVideo.realtimeSubscribeToAttendeeIdPresence(rosterUpdateCallback);

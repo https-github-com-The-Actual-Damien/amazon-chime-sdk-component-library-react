@@ -50,15 +50,16 @@ export function reducer(state: State, { type, payload }: Action): State {
 
   switch (type) {
     case VideoTileActionType.UPDATE: {
-      const { attendee } = payload;
+      const { attendee, chimeAttendeeId } = payload;
 
-      if (!attendee) {
+      if (!attendee || !chimeAttendeeId) {
         return state;
       }
 
+
       const attendees = {
         ...roaster,
-        [attendee.chimeAttendeeId]: attendee,
+        [chimeAttendeeId]: attendee,
       };
 
       return {
