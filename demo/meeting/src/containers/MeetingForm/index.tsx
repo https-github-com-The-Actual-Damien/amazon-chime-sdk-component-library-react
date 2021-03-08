@@ -21,7 +21,7 @@ import Card from '../../components/Card';
 import Spinner from '../../components/Spinner';
 import DevicePermissionPrompt from '../DevicePermissionPrompt';
 import RegionSelection from './RegionSelection';
-import { fetchMeeting, createGetAttendeeCallback } from '../../utils/api';
+import { fetchMeeting } from '../../utils/api';
 import { useAppState } from '../../providers/AppStateProvider';
 
 const MeetingForm: React.FC = () => {
@@ -59,7 +59,6 @@ const MeetingForm: React.FC = () => {
     }
 
     setIsLoading(true);
-    meetingManager.getAttendee = createGetAttendeeCallback(id);
 
     try {
       const { JoinInfo } = await fetchMeeting(id, attendeeName, region);
@@ -92,7 +91,7 @@ const MeetingForm: React.FC = () => {
         field={Input}
         label="Meeting Id"
         value={meetingId}
-        infoText="Anyone with access to the meeting ID can join"
+        infoText="Anyone with access to the meeting ID can jofgfgin"
         fieldProps={{
           name: 'meetingId',
           placeholder: 'Enter Meeting Id'
