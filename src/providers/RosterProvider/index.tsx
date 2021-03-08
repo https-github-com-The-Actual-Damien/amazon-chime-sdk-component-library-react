@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, {
-  useState,
   useEffect,
   useRef,
   useMemo,
   useContext,
   useReducer,
+  useCallback,
 } from 'react';
 import { DefaultModality } from 'amazon-chime-sdk-js';
 import { initialState, reducer, VideoTileActionType } from './state';
@@ -17,6 +17,8 @@ import { RosterType, RosterAttendeeType } from '../../types';
 
 interface RosterContextValue {
   roster: RosterType;
+  pinTile: (chimeAttendeeId: string) => void;
+  unPinTile: (chimeAttendeeId: string) => void;
 }
 
 const RosterContext = React.createContext<RosterContextValue | null>(null);
@@ -76,7 +78,6 @@ const RosterProvider: React.FC = ({ children }) => {
 
       // Update the roster first before waiting to fetch attendee info
 
-
       if (meetingManager.getAttendee) {
         const externalData = await meetingManager.getAttendee(externalUserId);
 
@@ -91,22 +92,54 @@ const RosterProvider: React.FC = ({ children }) => {
           chimeAttendeeId,
         },
       });
-
     };
 
     audioVideo.realtimeSubscribeToAttendeeIdPresence(rosterUpdateCallback);
 
     return () => {
       rosterRef.current = {};
+      dispatch({ type: VideoTileActionType.RESET });
       audioVideo.realtimeUnsubscribeToAttendeeIdPresence(rosterUpdateCallback);
     };
   }, [audioVideo]);
 
+  const pinTile = useCallback((chimeAttendeeId: string): void => {
+    if (!chimeAttendeeId) {
+      return;
+    }
+    const attendee = rosterRef.current[chimeAttendeeId];
+    dispatch({
+      type: VideoTileActionType.PIN,
+      payload: {
+        attendee,
+        chimeAttendeeId,
+        isPinned: true,
+      },
+    });
+  }, []);
+
+  const unPinTile = useCallback((chimeAttendeeId: string): void => {
+    if (!chimeAttendeeId) {
+      return;
+    }
+    const attendee = rosterRef.current[chimeAttendeeId];
+    dispatch({
+      type: VideoTileActionType.PIN,
+      payload: {
+        attendee,
+        chimeAttendeeId,
+        isPinned: false,
+      },
+    });
+  }, []);
+
   const value = useMemo(
     () => ({
       roster: state.roaster,
+      pinTile,
+      unPinTile,
     }),
-    [state.roaster]
+    [state.roaster, pinTile, unPinTile]
   );
 
   return (

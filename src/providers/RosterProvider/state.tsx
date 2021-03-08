@@ -10,6 +10,8 @@ export enum VideoTileActionType {
   UPDATE,
   REMOVE,
   RESET,
+  PIN,
+  UNPIN,
 }
 
 type UpdateAction = {
@@ -28,12 +30,21 @@ type RemoveAction = {
   };
 };
 
-// type ResetAction = {
-//   type: VideoTileActionType.RESET;
-//   payload?: any;
-// };
+type PinAction = {
+  type: VideoTileActionType.PIN;
+  payload: {
+    attendee?: RosterAttendeeType;
+    chimeAttendeeId: string;
+    isPinned?: boolean;
+  };
+};
 
-export type Action = UpdateAction | RemoveAction;
+type ResetAction = {
+  type: VideoTileActionType.RESET;
+  payload?: any;
+};
+
+export type Action = UpdateAction | RemoveAction | ResetAction | PinAction;
 
 export const initialState: State = {
   roaster: {},
@@ -55,25 +66,81 @@ export function reducer(state: State, { type, payload }: Action): State {
       if (!attendee || !chimeAttendeeId) {
         return state;
       }
-
-
-      const attendees = {
+      let stateRoaster = {
         ...roaster,
-        [chimeAttendeeId]: attendee,
       };
+      if (attendee.role && attendee.role.toLowerCase() === 'presenter') {
+        stateRoaster = {
+          [chimeAttendeeId]: attendee,
+          ...roaster,
+        };
+      } else {
+        stateRoaster = {
+          ...roaster,
+          [chimeAttendeeId]: attendee,
+        };
+      }
 
       return {
-        roaster: attendees,
+        roaster: stateRoaster,
       };
     }
     case VideoTileActionType.REMOVE: {
       const { chimeAttendeeId } = payload;
-      console.log(chimeAttendeeId, 'removed');
+
       const attendees = removeProperty(roaster, chimeAttendeeId);
 
       return {
         roaster: attendees,
       };
+    }
+    case VideoTileActionType.PIN: {
+      const { attendee, chimeAttendeeId, isPinned } = payload;
+
+      if (!attendee || !chimeAttendeeId) {
+        return state;
+      }
+
+      let stateRoaster = {
+        ...roaster,
+        [chimeAttendeeId]: { ...attendee, isPinned: isPinned },
+      };
+
+      let attendees = Object.values(stateRoaster);
+      const attendeesIds = Object.keys(stateRoaster);
+      const pinnedAttendees = attendees
+        .filter((_attendee: RosterAttendeeType) => _attendee?.isPinned)
+        .map((_attendee: RosterAttendeeType) => _attendee.chimeAttendeeId);
+      attendees = attendees.map((_attendee: RosterAttendeeType) => {
+        if (_attendee.role && _attendee.role.toLowerCase() === 'presenter') {
+          if (pinnedAttendees.includes(_attendee.chimeAttendeeId)) {
+            _attendee.order = 1;
+          } else {
+            _attendee.order = 2;
+          }
+        } else {
+          if (pinnedAttendees.includes(_attendee.chimeAttendeeId)) {
+            _attendee.order = 3;
+          } else {
+            _attendee.order = 4;
+          }
+        }
+        return _attendee;
+      });
+
+      attendeesIds.forEach((attendeeId: string, index) => {
+        if (stateRoaster[attendeeId]) {
+          stateRoaster[attendeeId] = attendees[index];
+        }
+      });
+
+      return {
+        roaster: stateRoaster,
+      };
+    }
+
+    case VideoTileActionType.RESET: {
+      return initialState;
     }
 
     default:
