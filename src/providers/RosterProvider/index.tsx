@@ -42,7 +42,6 @@ const RosterProvider: React.FC = ({ children }) => {
     ): Promise<void> => {
       if (!present) {
         delete rosterRef.current[chimeAttendeeId];
-        audioVideo.realtimeUnsubscribeFromVolumeIndicator(chimeAttendeeId);
         dispatch({
           type: VideoTileActionType.REMOVE,
           payload: {

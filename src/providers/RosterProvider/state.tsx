@@ -68,18 +68,12 @@ export function reducer(state: State, { type, payload }: Action): State {
       }
       let stateRoaster = {
         ...roaster,
+        [chimeAttendeeId]: {
+          ...attendee,
+          order:
+            attendee && attendee?.role.toLowerCase() === 'presenter' ? 1 : 2,
+        },
       };
-      if (attendee.role && attendee.role.toLowerCase() === 'presenter') {
-        stateRoaster = {
-          [chimeAttendeeId]: attendee,
-          ...roaster,
-        };
-      } else {
-        stateRoaster = {
-          ...roaster,
-          [chimeAttendeeId]: attendee,
-        };
-      }
 
       return {
         roaster: stateRoaster,
