@@ -48,12 +48,12 @@ export const VideoTileGrid: React.FC<Props> = ({
   const { tileId: featureTileId } = useFeaturedTileState();
   const { tiles } = useRemoteVideoTileState();
   const { tileId: contentTileId } = useContentShareState();
-  const { isVideoEnabled } = useLocalVideo();
+  const { isLocalVideoEnabled } = useLocalVideo();
   const featured =
     (layout === 'featured' && !!featureTileId) || !!contentTileId;
   const remoteSize = tiles.length + (contentTileId ? 1 : 0);
   const gridSize =
-    remoteSize > 1 && isVideoEnabled ? remoteSize + 1 : remoteSize;
+    remoteSize > 1 && isLocalVideoEnabled === 'enabled' ? remoteSize + 1 : remoteSize;
 
   return (
     <VideoGrid {...rest} size={gridSize} layout={featured ? 'featured' : null}>

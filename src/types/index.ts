@@ -1,6 +1,6 @@
 // Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
+import React from 'react';
 export type Direction = 'up' | 'right' | 'down' | 'left';
 
 export type DeviceType = {
@@ -24,11 +24,14 @@ export type LocalAudioOutputContextType = {
   isAudioOn: boolean;
   toggleAudio: () => void;
 };
+export type LocalVideoState = 'enabled' | 'disabled' | 'pending';
 
 export type LocalVideoContextType = {
   tileId: null | number;
-  isVideoEnabled: boolean;
-  toggleVideo: () => Promise<void>;
+  toggleVideo: (ele: HTMLVideoElement | null) => Promise<void>;
+  videoEl: React.RefObject<HTMLVideoElement>;
+  isLocalVideoEnabled: LocalVideoState;
+  setIsLocalVideoEnabled: React.Dispatch<React.SetStateAction<LocalVideoState>>;
 };
 
 export type ContentShareControlContextType = {
@@ -61,3 +64,19 @@ export enum DevicePermissionStatus {
   GRANTED = 'GRANTED',
   DENIED = 'DENIED',
 };
+
+
+export type SendVideoMessagePayload = {
+  meetingId: string;
+  attendeeId: string;
+}
+
+export enum SendVideoMessageType {
+  START_VIDEO = 'start-video',
+  STOP_VIDEO = 'stop-video',
+}
+
+export type Message = {
+  type: SendVideoMessageType;
+  payload: SendVideoMessagePayload;
+}

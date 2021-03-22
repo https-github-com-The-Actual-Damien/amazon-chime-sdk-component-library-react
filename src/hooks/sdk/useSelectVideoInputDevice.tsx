@@ -7,17 +7,17 @@ import { useMeetingManager } from '../../providers/MeetingProvider';
 import { useLocalVideo } from '../../providers/LocalVideoProvider';
 
 export const useSelectVideoInputDevice = () => {
-  const { isVideoEnabled, toggleVideo } = useLocalVideo();
+  const { isLocalVideoEnabled, toggleVideo } = useLocalVideo();
   const meetingManager = useMeetingManager();
 
   const selectVideo = useCallback(
     async (deviceId: string) => {
-      if (deviceId === 'none' && isVideoEnabled) {
-        await toggleVideo();
+      if (deviceId === 'none' && isLocalVideoEnabled === 'enabled') {
+        await toggleVideo(null);
       }
       await meetingManager.selectVideoInputDevice(deviceId);
     },
-    [isVideoEnabled]
+    [isLocalVideoEnabled]
   );
 
   return selectVideo;

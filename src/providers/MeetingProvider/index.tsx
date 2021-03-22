@@ -13,6 +13,7 @@ import { LocalVideoProvider } from '../LocalVideoProvider';
 import { FeaturedVideoTileProvider } from '../FeaturedVideoTileProvider';
 import { LocalAudioOutputProvider } from '../LocalAudioOutputProvider';
 import { ContentShareProvider } from '../ContentShareProvider';
+import { VideoSendingProvider } from '../VideoSendingProvider';
 import { LogLevel } from 'amazon-chime-sdk-js';
 
 interface Props {
@@ -22,9 +23,9 @@ interface Props {
   postLogConfig?: PostLogConfig;
   /** Whether or not to enable simulcast for the meeting session */
   simulcastEnabled?: boolean;
-  /** Pass a `MeetingManager` instance if you want to share this instance 
+  /** Pass a `MeetingManager` instance if you want to share this instance
    * across multiple different `MeetingProvider`s.
-  */
+   */
   meetingManager?: MeetingManager;
 }
 
@@ -38,7 +39,9 @@ export const MeetingProvider: React.FC<Props> = ({
   children,
 }) => {
   const [meetingManager] = useState(
-    () => meetingManagerProp || new MeetingManager({ logLevel, postLogConfig, simulcastEnabled })
+    () =>
+      meetingManagerProp ||
+      new MeetingManager({ logLevel, postLogConfig, simulcastEnabled })
   );
 
   return (
@@ -46,17 +49,19 @@ export const MeetingProvider: React.FC<Props> = ({
       <AudioVideoProvider>
         <DevicesProvider>
           <RosterProvider>
-            <RemoteVideoTileProvider>
-              <LocalVideoProvider>
-                <LocalAudioOutputProvider>
-                  <ContentShareProvider>
-                    <FeaturedVideoTileProvider>
-                      {children}
-                    </FeaturedVideoTileProvider>
-                  </ContentShareProvider>
-                </LocalAudioOutputProvider>
-              </LocalVideoProvider>
-            </RemoteVideoTileProvider>
+            <VideoSendingProvider>
+              <RemoteVideoTileProvider>
+                <LocalVideoProvider>
+                  <LocalAudioOutputProvider>
+                    <ContentShareProvider>
+                      <FeaturedVideoTileProvider>
+                        {children}
+                      </FeaturedVideoTileProvider>
+                    </ContentShareProvider>
+                  </LocalAudioOutputProvider>
+                </LocalVideoProvider>
+              </RemoteVideoTileProvider>
+            </VideoSendingProvider>
           </RosterProvider>
         </DevicesProvider>
       </AudioVideoProvider>

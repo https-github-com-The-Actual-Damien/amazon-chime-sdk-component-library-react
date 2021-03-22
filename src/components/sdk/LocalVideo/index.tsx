@@ -6,9 +6,11 @@ import styled from 'styled-components';
 
 import { useAudioVideo } from '../../../providers/AudioVideoProvider';
 import { useLocalVideo } from '../../../providers/LocalVideoProvider';
+import { useMeetingManager } from '../../../providers/MeetingProvider';
 import VideoTile from '../../ui/VideoTile';
 import { BaseSdkProps } from '../Base';
 import { useApplyVideoObjectFit } from '../../../hooks/useApplyVideoObjectFit';
+import useVideoSendingCommand from '../../../hooks/useVideoSendingCommand/useVideoSendingCommand';
 
 interface Props extends BaseSdkProps {
   id?: string;
@@ -20,13 +22,49 @@ const StyledLocalVideo = styled<any>(VideoTile)`
 `;
 
 export const LocalVideo: React.FC<Props> = ({ nameplate, ...rest }) => {
-  const { tileId, isVideoEnabled } = useLocalVideo();
+  const { tileId, isLocalVideoEnabled, videoEl } = useLocalVideo();
   const audioVideo = useAudioVideo();
-  const videoEl = useRef<HTMLVideoElement>(null);
+  const meetingManager = useMeetingManager();
+  const canSendLocalVideo = useVideoSendingCommand();
+
   useApplyVideoObjectFit(videoEl);
 
   useEffect(() => {
-    if (!audioVideo || !tileId || !videoEl.current || !isVideoEnabled) {
+    if (!audioVideo) {
+      return;
+    }
+    const sendLocalVideo = async () => {
+      await audioVideo.chooseVideoInputDevice(
+        meetingManager.selectedVideoInputDevice
+      );
+      audioVideo.startLocalVideoTile();
+    };
+
+    const sendLocalVideoPreview = async () => {
+      await audioVideo.chooseVideoInputDevice(
+        meetingManager.selectedVideoInputDevice
+      );
+      if (videoEl.current) {
+        audioVideo.startVideoPreviewForVideoInput(videoEl.current);
+      } else {
+        throw new Error('No video preview element to show preview!');
+      }
+    };
+
+    if (canSendLocalVideo && isLocalVideoEnabled !== 'disabled') {
+      if (videoEl.current) {
+        audioVideo.stopVideoPreviewForVideoInput(videoEl.current);
+      }
+      sendLocalVideo();
+    }
+    if (!canSendLocalVideo && isLocalVideoEnabled === 'enabled') {
+      audioVideo.stopLocalVideoTile();
+      sendLocalVideoPreview();
+    }
+  }, [audioVideo, canSendLocalVideo]);
+
+  useEffect(() => {
+    if (!audioVideo || !tileId || !videoEl.current || !canSendLocalVideo) {
       return;
     }
 
@@ -38,11 +76,11 @@ export const LocalVideo: React.FC<Props> = ({ nameplate, ...rest }) => {
         audioVideo.unbindVideoElement(tileId);
       }
     };
-  }, [audioVideo, tileId, isVideoEnabled]);
+  }, [audioVideo, tileId, canSendLocalVideo]);
 
   return (
     <StyledLocalVideo
-      active={isVideoEnabled}
+      active={canSendLocalVideo}
       nameplate={nameplate}
       ref={videoEl}
       {...rest}
