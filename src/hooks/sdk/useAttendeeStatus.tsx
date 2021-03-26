@@ -8,10 +8,12 @@ import { useAudioVideo } from '../../providers/AudioVideoProvider';
 import useAttendeeAudioStatus from './useAttendeeAudioStatus';
 
 interface RosterAttendeeStatus {
+  volume: number;
   muted: boolean;
   videoEnabled: boolean;
   sharingContent: boolean;
   signalStrength: number;
+  videoTileId: number | null;
 }
 
 export function useAttendeeStatus(attendeeId: string): RosterAttendeeStatus {
@@ -131,6 +133,7 @@ export function useAttendeeStatus(attendeeId: string): RosterAttendeeStatus {
     ...audioState,
     videoEnabled,
     sharingContent,
+    videoTileId,
   };
 }
 

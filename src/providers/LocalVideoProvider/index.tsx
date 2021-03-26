@@ -16,12 +16,7 @@ import { useMeetingManager } from '../MeetingProvider';
 import { useAudioVideo } from '../AudioVideoProvider';
 
 import { videoInputSelectionToDevice } from '../../utils/device-utils';
-import {
-  LocalVideoContextType,
-  LocalVideoState,
-  SendVideoMessageType,
-} from '../../types';
-import { useVideoSendingService } from '../VideoSendingProvider';
+import { LocalVideoContextType, LocalVideoState } from '../../types';
 
 const Context = createContext<LocalVideoContextType | null>(null);
 
@@ -32,8 +27,9 @@ const LocalVideoProvider: React.FC = ({ children }) => {
     LocalVideoState
   >('disabled');
   const [tileId, setTileId] = useState<number | null>(null);
+  const [canSendLocalVideo, setCanSendLocalVideo] = useState(false);
   const videoEl = useRef<HTMLVideoElement>(null);
-  const videoSendingService = useVideoSendingService();
+
   const selfAttendeeId = meetingManager?.configuration?.credentials
     ?.attendeeId!;
   const meetingId = meetingManager?.meetingId!;
@@ -52,43 +48,45 @@ const LocalVideoProvider: React.FC = ({ children }) => {
   //   };
   // }, [audioVideo]);
 
-  const toggleVideo = useCallback(
-    async (previewEle: HTMLVideoElement | null): Promise<void> => {
-      if (
-        isLocalVideoEnabled === 'enabled' ||
-        !meetingManager.selectedVideoInputDevice
-      ) {
-        audioVideo?.stopLocalVideoTile();
-        previewEle && audioVideo?.stopVideoPreviewForVideoInput(previewEle);
-        setIsLocalVideoEnabled('disabled');
+  const toggleVideo = useCallback(async (): Promise<void> => {
+    if (
+      isLocalVideoEnabled === 'enabled' ||
+      !meetingManager.selectedVideoInputDevice
+    ) {
+      audioVideo?.stopLocalVideoTile();
+      videoEl.current &&
+        audioVideo?.stopVideoPreviewForVideoInput(videoEl.current);
+      setIsLocalVideoEnabled('disabled');
+      await audioVideo?.chooseVideoInputDevice(null);
+      const payload = { meetingId: meetingId, attendeeId: selfAttendeeId };
+      // videoSendingService?.sendMessage({
+      //   type: SendVideoMessageType.STOP_VIDEO,
+      //   payload: payload,
+      // });
+    } else if (isLocalVideoEnabled === 'disabled') {
+      await audioVideo?.chooseVideoInputDevice(
+        videoInputSelectionToDevice(meetingManager.selectedVideoInputDevice)
+      );
+      if (videoEl.current) {
+        console.log('Start preview before getting remote command');
+        audioVideo?.startVideoPreviewForVideoInput(videoEl.current);
+
+        setIsLocalVideoEnabled('pending');
 
         const payload = { meetingId: meetingId, attendeeId: selfAttendeeId };
-        videoSendingService?.sendMessage({
-          type: SendVideoMessageType.STOP_VIDEO,
-          payload: payload,
-        });
-      } else if (isLocalVideoEnabled === 'disabled') {
-        await audioVideo?.chooseVideoInputDevice(
-          videoInputSelectionToDevice(meetingManager.selectedVideoInputDevice)
-        );
-        if (previewEle) {
-          console.log('Start preview before getting remote command');
-          audioVideo?.startVideoPreviewForVideoInput(previewEle);
-
-          setIsLocalVideoEnabled('pending');
-
-          const payload = { meetingId: meetingId, attendeeId: selfAttendeeId };
-          videoSendingService?.sendMessage({
-            type: SendVideoMessageType.START_VIDEO,
-            payload: payload,
-          });
-        } else {
-          throw new Error('No video preview element');
-        }
+        // videoSendingService?.sendMessage({
+        //   type: SendVideoMessageType.START_VIDEO,
+        //   payload: payload,
+        // });
+      } else {
+        throw new Error('No video preview element');
       }
-    },
-    [audioVideo, isLocalVideoEnabled, meetingManager.selectedVideoInputDevice]
-  );
+    }
+  }, [
+    audioVideo,
+    isLocalVideoEnabled,
+    meetingManager.selectedVideoInputDevice,
+  ]);
 
   useEffect(() => {
     if (!audioVideo) {
@@ -119,8 +117,18 @@ const LocalVideoProvider: React.FC = ({ children }) => {
       toggleVideo,
       tileId,
       videoEl,
+      canSendLocalVideo,
+      setCanSendLocalVideo,
     }),
-    [isLocalVideoEnabled, setIsLocalVideoEnabled, toggleVideo, tileId, videoEl]
+    [
+      isLocalVideoEnabled,
+      setIsLocalVideoEnabled,
+      canSendLocalVideo,
+      setCanSendLocalVideo,
+      toggleVideo,
+      tileId,
+      videoEl,
+    ]
   );
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

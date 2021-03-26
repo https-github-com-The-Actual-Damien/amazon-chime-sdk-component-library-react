@@ -1,6 +1,6 @@
 {
-  "name": "amazon-chime-sdk-component-library-react",
-  "version": "2.1.0",
+  "name": "@Tocca-VE/amazon-chime-sdk-component-library-react",
+  "version": "1.0.29",
   "description": "Amazon Chime SDK Component Library - React",
   "main": "lib/index.js",
   "module": "lib/index.esm.js",
@@ -9,7 +9,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/aws/amazon-chime-sdk-component-library"
+    "url": "https://github.com/Tocca-VE/amazon-chime-sdk-component-library-react.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "types": "lib/index.d.ts",
   "scripts": {

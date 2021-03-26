@@ -23,15 +23,19 @@ export type DeviceConfig = {
 export type LocalAudioOutputContextType = {
   isAudioOn: boolean;
   toggleAudio: () => void;
+  setVolume: (volume: number) => void;
+  getVolume: () => number;
 };
 export type LocalVideoState = 'enabled' | 'disabled' | 'pending';
 
 export type LocalVideoContextType = {
   tileId: null | number;
-  toggleVideo: (ele: HTMLVideoElement | null) => Promise<void>;
+  toggleVideo: () => Promise<void>;
   videoEl: React.RefObject<HTMLVideoElement>;
   isLocalVideoEnabled: LocalVideoState;
   setIsLocalVideoEnabled: React.Dispatch<React.SetStateAction<LocalVideoState>>;
+  canSendLocalVideo: boolean;
+  setCanSendLocalVideo: (canSendLocalVideo: boolean) => void;
 };
 
 export type ContentShareControlContextType = {
@@ -48,10 +52,25 @@ export enum MeetingStatus {
   JoinedFromAnotherDevice
 }
 
+export enum SessionConnection {
+  Reconnecting,
+  Connecting,
+}
+
 export type RosterAttendeeType = {
   chimeAttendeeId: string;
   externalUserId?: string;
-  name?: string;
+  uid?: string;
+  avatar?: string;
+  firstName?: string;
+  lastName?: string;
+  companyName?: string;
+  companyTitle?: string;
+  role?: string;
+  cardIndex: number;
+  order: number;
+  isPinned: boolean;
+  fullName?: string;
 };
 
 export type RosterType = {

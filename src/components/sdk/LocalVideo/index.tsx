@@ -10,7 +10,7 @@ import { useMeetingManager } from '../../../providers/MeetingProvider';
 import VideoTile from '../../ui/VideoTile';
 import { BaseSdkProps } from '../Base';
 import { useApplyVideoObjectFit } from '../../../hooks/useApplyVideoObjectFit';
-import useVideoSendingCommand from '../../../hooks/useVideoSendingCommand/useVideoSendingCommand';
+// import useVideoSendingCommand from '../../../hooks/useVideoSendingCommand/useVideoSendingCommand';
 
 interface Props extends BaseSdkProps {
   id?: string;
@@ -22,10 +22,14 @@ const StyledLocalVideo = styled<any>(VideoTile)`
 `;
 
 export const LocalVideo: React.FC<Props> = ({ nameplate, ...rest }) => {
-  const { tileId, isLocalVideoEnabled, videoEl } = useLocalVideo();
+  const {
+    tileId,
+    isLocalVideoEnabled,
+    videoEl,
+    canSendLocalVideo,
+  } = useLocalVideo();
   const audioVideo = useAudioVideo();
   const meetingManager = useMeetingManager();
-  const canSendLocalVideo = useVideoSendingCommand();
 
   useApplyVideoObjectFit(videoEl);
 

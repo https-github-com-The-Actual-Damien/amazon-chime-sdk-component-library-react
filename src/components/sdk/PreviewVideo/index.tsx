@@ -48,6 +48,7 @@ export const PreviewVideo: React.FC<BaseSdkProps> = (props) => {
       mounted = false;
 
       if (videoEl.current) {
+        audioVideo.chooseVideoInputDevice(null);
         audioVideo.stopVideoPreviewForVideoInput(videoEl.current);
       }
     };

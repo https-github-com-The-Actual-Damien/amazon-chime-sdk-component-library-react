@@ -7,6 +7,7 @@ import { useAudioVideo } from '../../providers/AudioVideoProvider';
 
 export function useAttendeeAudioStatus(attendeeId: string) {
   const audioVideo = useAudioVideo();
+  const [volume, setVolume] = useState(0);
   const [muted, setMuted] = useState(false);
   const [signalStrength, setSignalStrength] = useState(1);
 
@@ -17,7 +18,7 @@ export function useAttendeeAudioStatus(attendeeId: string) {
 
     const callback = (
       _: string,
-      __: number | null,
+      volume: number | null,
       muted: boolean | null,
       signalStrength: number | null
     ): void => {
@@ -26,6 +27,9 @@ export function useAttendeeAudioStatus(attendeeId: string) {
       }
       if (signalStrength !== null) {
         setSignalStrength(signalStrength);
+      }
+      if (volume !== null) {
+        setVolume(volume);
       }
     };
 
@@ -38,6 +42,7 @@ export function useAttendeeAudioStatus(attendeeId: string) {
   return {
     muted,
     signalStrength,
+    volume,
   };
 }
 

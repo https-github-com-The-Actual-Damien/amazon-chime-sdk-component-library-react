@@ -13,7 +13,7 @@ export const useSelectVideoInputDevice = () => {
   const selectVideo = useCallback(
     async (deviceId: string) => {
       if (deviceId === 'none' && isLocalVideoEnabled === 'enabled') {
-        await toggleVideo(null);
+        await toggleVideo();
       }
       await meetingManager.selectVideoInputDevice(deviceId);
     },

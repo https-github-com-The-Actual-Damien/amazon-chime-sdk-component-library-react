@@ -44,15 +44,13 @@ export interface PopOverProps
   a11yLabel: string;
   /** The elements that populate the menu */
   children: any;
-  /** Allow the popover to stay open for multiple clicks. */
-  closeOnClick?: boolean;
 }
 
 const getFocusableElements = (node: HTMLElement): NodeListOf<HTMLElement> => {
   return node.querySelectorAll('button, [href]');
 };
 
-export const PopOver: FC<PopOverProps> = ({
+export const PopSubMenu: FC<PopOverProps> = ({
   renderButton,
   renderButtonWrapper,
   children,
@@ -60,21 +58,21 @@ export const PopOver: FC<PopOverProps> = ({
   placement = 'bottom-start',
   a11yLabel,
   className,
-  closeOnClick = true,
   ...rest
 }) => {
-  const menuRef = createRef<HTMLSpanElement>();
+  const subMenuRef = createRef<HTMLSpanElement>();
   const [isOpen, setIsOpen] = useState(false);
+  const [isListActive, setClass] = useState(false);
 
   useEffect(() => {
-    if (isOpen && !!menuRef.current) {
-      const nodes = getFocusableElements(menuRef.current);
+    if (isOpen && !!subMenuRef.current) {
+      const nodes = getFocusableElements(subMenuRef.current);
       !!nodes && nodes[0].focus();
     }
   }, [isOpen]);
 
   const move = (direction: string) => {
-    const node = menuRef.current;
+    const node = subMenuRef.current;
 
     if (isSubMenu) {
       // the parent menu can access
@@ -101,9 +99,6 @@ export const PopOver: FC<PopOverProps> = ({
   };
 
   const closePopover = (e: any) => {
-    if (!closeOnClick) {
-      return;
-    }
     const isSubMenuButton = e.target.closest("[data-menu='submenu']");
     return !isSubMenuButton ? setIsOpen(false) : false;
   };
@@ -119,30 +114,37 @@ export const PopOver: FC<PopOverProps> = ({
     }
   };
 
-  useClickOutside(menuRef, () => setIsOpen(false));
-  useTabOutside(menuRef, () => setIsOpen(false));
+  useClickOutside(subMenuRef, () => setIsOpen(false));
+  useTabOutside(subMenuRef, () => setIsOpen(false));
 
-  // console.log('menuRef', menuRef, 'subMenuRef', subMenuRef);
   return (
-    <span ref={menuRef} onKeyDown={handleKeyUp} data-testid="popover">
+    <span
+      ref={subMenuRef}
+      onKeyDown={handleKeyUp}
+      data-testid="popover"
+      onMouseLeave={() => {
+        setIsOpen(false);
+        setClass(false);
+      }}
+      onMouseOver={() => setClass(true)}
+      className={classnames(
+        { hovered: isListActive },
+        { 'not-hovered': !isListActive }
+      )}
+    >
       <Manager>
         <Reference>
           {({ ref }) => {
             let props = {
               ref,
               className: classnames(className, 'ch-popover-toggle'),
-              onClick: () => setIsOpen(!isOpen),
+              onMouseOver: () => setIsOpen(true),
               'data-menu': isSubMenu ? 'submenu' : null,
               'aria-label': a11yLabel,
               'aria-haspopup': true,
               'aria-expanded': isOpen,
               'data-testid': 'popover-toggle',
             };
-            const mouseFunction = {
-              onMouseOver: () => setIsOpen(true),
-              onMouseLeave: (e: any) => closePopover(e),
-            };
-            if (isSubMenu) props = { ...props, ...mouseFunction };
 
             if (renderButton) {
               return (
@@ -153,12 +155,7 @@ export const PopOver: FC<PopOverProps> = ({
             }
 
             if (renderButtonWrapper) {
-              const { ref, ...rest } = props;
-              return (
-                <span ref={ref}>
-                  {renderButtonWrapper(isOpen, rest)}
-                </span>
-              );
+              return renderButtonWrapper(isOpen, props);
             }
 
             return null;
@@ -192,4 +189,4 @@ export const PopOver: FC<PopOverProps> = ({
   );
 };
 
-export default PopOver;
+export default PopSubMenu;

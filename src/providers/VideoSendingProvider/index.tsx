@@ -1,16 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, {
-  useContext,
-  useState,
-  createContext,
-} from "react";
+import React, { useContext, useState, createContext, useEffect } from 'react';
 
 import { FullJitterBackoff } from 'amazon-chime-sdk-js';
 import { useMeetingManager } from '../MeetingProvider';
 import { getVideoSendingWssUrl } from '../../socket-utils';
-import { Message } from '../../types';
+import { Message, MeetingStatus } from '../../types';
+import { useMeetingStatus } from '../../hooks/sdk/useMeetingStatus';
 import ReconnectingPromisedWebSocket from '../../socket-utils/ReconnectingPromisedWebSocket';
 import DefaultDOMWebSocketFactory from '../../socket-utils/DefaultDOMWebSocketFactory';
 import DefaultPromisedWebSocketFactory from '../../socket-utils/DefaultPromisedWebSocketFactory';
@@ -34,10 +31,10 @@ class VideoSendingService {
   private startWsStabilizer = () => {
     const seconds = 1000 * 60;
     const pingMessage = {
-      message: "ping",
-      data: JSON.stringify({type: "ping"})
+      message: 'ping',
+      data: JSON.stringify({ type: 'ping' }),
     };
-    
+
     this.wsStabilizer = setInterval(() => {
       try {
         this.websocket?.send(JSON.stringify(pingMessage));
@@ -57,10 +54,13 @@ class VideoSendingService {
 
   sendVideoMessaging = async (): Promise<void> => {
     if (!this.attendeeId || !this.meetingId) {
-      throw new Error("meetingId and attendeeId are required to send video messaging");
+      throw new Error(
+        'meetingId and attendeeId are required to send video messaging'
+      );
     }
 
     const baseUrl = getVideoSendingWssUrl();
+    console.log('hello', baseUrl);
     const url = `${baseUrl}?meetingId=${this.meetingId}&attendeeId=${this.attendeeId}`;
     this.websocket = new ReconnectingPromisedWebSocket(
       url,
@@ -69,12 +69,13 @@ class VideoSendingService {
       new DefaultPromisedWebSocketFactory(new DefaultDOMWebSocketFactory()),
       new FullJitterBackoff(1000, 0, 10000)
     );
-
+    
     this.websocket.addEventListener('open', () => {
+      console.log('hello');
       // Initiate WS stabilizer
       this.startWsStabilizer();
     });
-    
+
     await this.websocket.open(VideoSendingService.WEB_SOCKET_TIMEOUT_MS);
 
     this.websocket.addEventListener('message', (event: Event) => {
@@ -88,7 +89,7 @@ class VideoSendingService {
           payload: data.payload,
         });
       } catch (e) {
-        console.log("Error:", e);
+        console.log('Error:', e);
       }
     });
 
@@ -103,25 +104,25 @@ class VideoSendingService {
 
   sendMessage = (msg: Message) => {
     if (!this.websocket) {
-      console.error("No websocket");
+      console.error('No websocket');
       return;
     }
-    
+
     const message = {
-      message: "sendmessage",
-      data: JSON.stringify(msg)
-    }
+      message: 'sendmessage',
+      data: JSON.stringify(msg),
+    };
     try {
       this.websocket.send(JSON.stringify(message));
     } catch (e) {
       console.error(`Error sending message: ${e}`);
     }
-  }
+  };
 
   subscribeToMessageUpdate = (callback: (message: Message) => void) => {
     this.messageUpdateCallbacks.push(callback);
   };
- 
+
   unsubscribeFromMessageUpdate = (callback: (message: Message) => void) => {
     const index = this.messageUpdateCallbacks.indexOf(callback);
     if (index !== -1) {
@@ -137,7 +138,9 @@ class VideoSendingService {
   };
 }
 
-const VideoSendingServiceContext = createContext<VideoSendingService | null>(null);
+const VideoSendingServiceContext = createContext<VideoSendingService | null>(
+  null
+);
 
 function useVideoSendingService() {
   const context = useContext(VideoSendingServiceContext);
@@ -151,17 +154,30 @@ function useVideoSendingService() {
 
 const VideoSendingProvider: React.FC = ({ children }) => {
   const meetingManager = useMeetingManager();
-  const meetingId = meetingManager.meetingId;
-  const attendeeId = meetingManager.configuration?.credentials?.attendeeId;
-  
-  const [videoSendingService] = useState<VideoSendingService>(
-    () => new VideoSendingService(meetingId!, attendeeId!));
+  const meetingStatus = useMeetingStatus();
+
+  const [
+    videoSendingService,
+    setVideoSendingService,
+  ] = useState<VideoSendingService | null>(null);
+
+  useEffect(() => {
+    if (meetingStatus !== MeetingStatus.Succeeded) {
+      return;
+    }
+    const meetingId = meetingManager.meetingId;
+    const attendeeId = meetingManager.configuration?.credentials?.attendeeId;
+    console.log(meetingId, attendeeId, 'attendeeId');
+    setVideoSendingService(
+      () => new VideoSendingService(meetingId!, attendeeId!)
+    );
+  }, [meetingStatus]);
 
   return (
     <VideoSendingServiceContext.Provider value={videoSendingService}>
       {children}
     </VideoSendingServiceContext.Provider>
-  )
-}
+  );
+};
 
 export { VideoSendingProvider, useVideoSendingService };

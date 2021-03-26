@@ -19,7 +19,8 @@ export const RosterAttendee: React.FC<RosterAttendeeProps> = ({
 }) => {
   const { muted, videoEnabled, sharingContent } = useAttendeeStatus(attendeeId);
   const { roster } = useRosterState();
-  const attendeeName = roster[attendeeId]?.name || '';
+  // const attendeeName = roster[attendeeId]?.name || '';
+  const attendeeName = roster[attendeeId]?.fullName || '';
 
   return (
     <RosterCell

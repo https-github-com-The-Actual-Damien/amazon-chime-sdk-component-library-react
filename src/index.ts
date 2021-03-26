@@ -167,7 +167,12 @@ export { lightTheme, darkTheme, GlobalStyles, StyledReset } from './theme';
 export { VideoQuality } from './hooks/sdk/useSelectVideoQuality';
 
 // enums
-export { MeetingStatus, DevicePermissionStatus } from './types/index';
+export {
+  MeetingStatus,
+  DevicePermissionStatus,
+  Message,
+  SendVideoMessageType,
+} from './types/index';
 export { Severity, ActionType } from './providers/NotificationProvider';
 
 // Class

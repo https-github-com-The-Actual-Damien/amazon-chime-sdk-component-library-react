@@ -35,7 +35,7 @@ const VideoInputControl: React.FC<Props> = ({ label = 'Video' }) => {
   return (
     <ControlBarButton
       icon={<Camera disabled={isLocalVideoEnabled === 'pending'} />}
-      onClick={() => toggleVideo(null)}
+      onClick={() => toggleVideo()}
       label={label}
       popOver={dropdownOptions}
     />

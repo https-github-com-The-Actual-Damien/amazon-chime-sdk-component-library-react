@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export const getVideoSendingWssUrl = () => {
-  return 'wss://1ft9bu028h.execute-api.us-east-1.amazonaws.com/Prod';
+  return 'wss://gdiyfa36xd.execute-api.us-east-1.amazonaws.com/Prod';
 };
 
 const isValidCSSHex = (hex: string) => {

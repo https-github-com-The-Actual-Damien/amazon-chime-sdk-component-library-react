@@ -13,7 +13,6 @@ import { LocalVideoProvider } from '../LocalVideoProvider';
 import { FeaturedVideoTileProvider } from '../FeaturedVideoTileProvider';
 import { LocalAudioOutputProvider } from '../LocalAudioOutputProvider';
 import { ContentShareProvider } from '../ContentShareProvider';
-import { VideoSendingProvider } from '../VideoSendingProvider';
 import { LogLevel } from 'amazon-chime-sdk-js';
 
 interface Props {
@@ -49,19 +48,17 @@ export const MeetingProvider: React.FC<Props> = ({
       <AudioVideoProvider>
         <DevicesProvider>
           <RosterProvider>
-            <VideoSendingProvider>
-              <RemoteVideoTileProvider>
-                <LocalVideoProvider>
-                  <LocalAudioOutputProvider>
-                    <ContentShareProvider>
-                      <FeaturedVideoTileProvider>
-                        {children}
-                      </FeaturedVideoTileProvider>
-                    </ContentShareProvider>
-                  </LocalAudioOutputProvider>
-                </LocalVideoProvider>
-              </RemoteVideoTileProvider>
-            </VideoSendingProvider>
+            <RemoteVideoTileProvider>
+              <LocalVideoProvider>
+                <LocalAudioOutputProvider>
+                  <ContentShareProvider>
+                    <FeaturedVideoTileProvider>
+                      {children}
+                    </FeaturedVideoTileProvider>
+                  </ContentShareProvider>
+                </LocalAudioOutputProvider>
+              </LocalVideoProvider>
+            </RemoteVideoTileProvider>
           </RosterProvider>
         </DevicesProvider>
       </AudioVideoProvider>
