@@ -80,6 +80,10 @@ const RosterProvider: React.FC = ({ children }) => {
       if (meetingManager.getAttendee) {
         const externalData = await meetingManager.getAttendee(externalUserId);
 
+        // Make sure that the attendee is still on the roster
+        if (!rosterRef.current[attendeeId]) {
+          return;
+        }
         attendee = { ...attendee, ...externalData };
       }
 
